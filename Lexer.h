@@ -10,7 +10,7 @@ class Lexer {
 		void Lex();
 		void ScanLine(std::string);
 		Token NextToken(std::string);
-		std::string CollectIdentifier(std::string line);
+		std::string CollectIdentifier(std::string line, bool fix_pointer = false);
 		std::string CollectString(std::string line);
 		std::string CollectNumeric(std::string line);
 		void DisplayTokens();

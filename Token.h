@@ -5,7 +5,7 @@
 enum TokenType {
 	// Single Character
 	LPAREN, RPAREN, LBRACKET, RBRACKET, LBRACE, RBRACE,
-	PLUS, MINUS, STAR, SLASH, COMMA, NEWLINE,
+	PLUS, MINUS, STAR, SLASH, COMMA, NEWLINE, COLON,
 
 	// Single/Two Character
 	EQUAL, COMPARE, LESS, LESS_EQUAL, MORE, MORE_EQUAL,
@@ -14,7 +14,10 @@ enum TokenType {
 	IDENTIFIER, STRING, NUMBER,
 
 	// Multi-Character
-	AND, OR,
+	AND, OR, IF, WHILE, FOR,
+
+	// Other
+	UNKNOWN,
 
 	EOT // End of Tokens
 };
