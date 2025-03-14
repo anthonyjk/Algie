@@ -125,10 +125,27 @@ Token Lexer::NextToken(std::string line) {
 				break;
 			default:
 				std::cout << "default " << std::endl;
-				if(isalpha(line.at(pointer))) {
+				if(isalpha(line.at(pointer)) || line.at(pointer) == '_') {
 					std::string symbol = CollectIdentifier(line);
+					
 					++pointer;
-					return Token(IDENTIFIER, symbol);
+					if(symbol == "and") {
+						return Token(AND, symbol);
+					} else if(symbol == "if") {
+						return Token(IF, symbol);
+					} else if(symbol == "while") {
+						return Token(WHILE, symbol);
+					} else if(symbol == "or") {
+						return Token(OR, symbol);
+					} else if(symbol == "for") {
+						return Token(FOR, symbol);
+					} else if(symbol == "true") {
+						return Token(TRUE, symbol);
+					} else if(symbol == "false") {
+						return Token(FALSE, symbol);
+					} else {
+						return Token(IDENTIFIER, symbol);
+					}
 				} else {
 					std::string unk(1, line.at(pointer));
 					++pointer;
@@ -148,7 +165,7 @@ std::string Lexer::CollectIdentifier(std::string line, bool fix_pointer) {
 	std::string symbol;
 
 	for(char c : line) {
-		if(c == ' ' || c == '\n' || isalnum(c) == false) {
+		if(c == ' ' || c == '\n' || (isalnum(c) == false && c != '_')) {
 			break;
 		}
 

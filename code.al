@@ -1,6 +1,10 @@
 x = 14
 y = 0
 
-for(int;x) {
-	print(y)
+for(int:x) {
+	if(is_a_number(y) == true) {
+		print(y)
+	}
 }
+
+

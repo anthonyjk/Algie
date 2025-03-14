@@ -14,7 +14,7 @@ enum TokenType {
 	IDENTIFIER, STRING, NUMBER,
 
 	// Multi-Character
-	AND, OR, IF, WHILE, FOR,
+	AND, OR, IF, WHILE, FOR, TRUE, FALSE,
 
 	// Other
 	UNKNOWN,
