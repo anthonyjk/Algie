@@ -1,6 +1,7 @@
 #ifndef TOKEN_H
 #define TOKEN_H
 #include <string>
+#include <iostream>
 
 enum TokenType {
 	// Single Character
@@ -8,7 +9,7 @@ enum TokenType {
 	PLUS, MINUS, STAR, SLASH, COMMA, NEWLINE, COLON,
 
 	// Single/Two Character
-	EQUAL, COMPARE, LESS, LESS_EQUAL, MORE, MORE_EQUAL,
+	BANG, EQUAL, BANG_EQUAL, COMPARE, LESS, LESS_EQUAL, MORE, MORE_EQUAL,
 	
 	// Identifiers
 	IDENTIFIER, STRING, NUMBER,
@@ -25,8 +26,12 @@ enum TokenType {
 class Token {
 	public:
 		Token(TokenType type, std::string value) : type(type), value(value) {}
-		std::string getValue(){ return value; }
-		TokenType getType(){ return type; }
+		std::string getValue() const { return value; }
+		TokenType getType() const { return type; }
+		friend std::ostream & operator<<(std::ostream & os, const Token & token) {
+			os << token.getType() << " | " << token.getValue();
+			return os;
+		}
 	private:
 		TokenType type;
 		std::string value;

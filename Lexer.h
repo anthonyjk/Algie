@@ -7,7 +7,7 @@
 class Lexer {
 	public:
 		Lexer(std::string path) : path(path) {}		
-		void Lex();
+		std::vector<Token> Lex();
 		void ScanLine(std::string);
 		Token NextToken(std::string);
 		std::string CollectIdentifier(std::string line, bool fix_pointer = false);

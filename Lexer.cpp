@@ -3,7 +3,7 @@
 #include <string>
 #include <iostream>
 
-void Lexer::Lex() {
+std::vector<Token> Lexer::Lex() {
 	std::ifstream File(path);
 
 	std::string line;
@@ -12,6 +12,8 @@ void Lexer::Lex() {
 	}
 
 	File.close();
+
+	return tokens;
 }
 
 
@@ -28,7 +30,6 @@ void Lexer::ScanLine(std::string line) {
 
 Token Lexer::NextToken(std::string line) {
 	while(pointer < static_cast<int>(line.size())) {	
-		std::cout << line.at(pointer) << std::endl;
 		if(isdigit(line.at(pointer))) {
 			return Token(NUMBER, CollectNumeric(line));
 		}
@@ -87,6 +88,15 @@ Token Lexer::NextToken(std::string line) {
 				++pointer;
 				return Token(EQUAL, "=");
 				break;
+			case '!':
+				if(pointer+1 < static_cast<int>(line.size()) && line.at(pointer+1) == '=') {
+					pointer += 2;
+					return Token(BANG_EQUAL, "!=");
+				}
+
+				++pointer;
+				return Token(BANG, "!");
+				break;
 			case '<':
 				if(pointer+1 < static_cast<int>(line.size()) && line.at(pointer+1) == '=') {
 					pointer += 2;
@@ -124,7 +134,6 @@ Token Lexer::NextToken(std::string line) {
 				++pointer;
 				break;
 			default:
-				std::cout << "default " << std::endl;
 				if(isalpha(line.at(pointer)) || line.at(pointer) == '_') {
 					std::string symbol = CollectIdentifier(line);
 					
