@@ -12,6 +12,8 @@ std::vector<Token> Lexer::Lex() {
 	}
 
 	File.close();
+	
+	tokens.push_back(Token(EOT, "EOT"));
 
 	return tokens;
 }

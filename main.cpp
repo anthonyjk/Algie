@@ -1,6 +1,7 @@
 #include "Token.h"
 #include "Lexer.h"
 #include "Parser.h"
+#include "Syntax.h"
 #include <string>
 #include <fstream>
 #include <iostream>
@@ -13,7 +14,9 @@ int main(int argc, char *argv[]) {
 
 	Lexer myLexer(argv[1]); // pass path to source file to Lexer
 	Parser myParser(myLexer.Lex());
-	myParser.Parse();
+	auto node = myParser.Parse();
+
+	node->Display();
 	
 	return 0;
 }
