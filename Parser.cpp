@@ -3,23 +3,24 @@
 #include "Parser.h"
 #include "Syntax.h"
 
-/*
- *	Quick example of smart pointers with AST Objects
- *
- *	BinOp op;
- *	std::unique_ptr = std::make_unique<BinOp>();
- *	*ptr = op;
- *	return ptr;
- *
- *	for return types of std::unique_ptr<AST>
- */
+void Parser::Parse(Program & program) {
+	int temp = 0;
+	while(pointer < static_cast<int>(tokens.size()) && temp < 25) {
+		std::cout << tokens.at(pointer).getType() << std::endl;
+		switch(tokens.at(pointer).getType()) {
+			case NUMBER:
+				program.Append(Expr());
+				break;
+			case IDENTIFIER:
+				program.Append(Expr());	
+				break;
+			case EOT:
+				pointer = tokens.size(); // just end program
+				break;
+		}
 
-std::unique_ptr<AST> Parser::Parse() {
-	//for(const Token & t : tokens) {
-	//	std::cout << t << std::endl; 
-	//}
-	//
-	return Expr();
+		++temp;
+	}
 }
 
 void Parser::Eat(TokenType tt) {
@@ -30,25 +31,39 @@ void Parser::Eat(TokenType tt) {
 	}
 }
 
+// Expressions
 std::unique_ptr<AST> Parser::Factor() {
 	Token token = tokens.at(pointer);
-	if(token.getType() == NUMBER) {
-		Eat(NUMBER);
-		return std::unique_ptr<AST>(new Num(token));
-	} else if (token.getType() == LPAREN) {
-		Eat(LPAREN);
-		auto node = Expr(); // returns ptr to BinOp node
-		Eat(RPAREN);
-		return node;
-	} else {
-		return std::unique_ptr<AST>(new Num(token)); // temp
+	
+	switch(token.getType()) {
+		case NUMBER:
+			Eat(NUMBER);
+			return std::unique_ptr<AST>(new Numeric(token));
+			break;
+		case IDENTIFIER:
+			Eat(IDENTIFIER);
+			return std::unique_ptr<AST>(new Identifier(token));
+			break;
+		case STRING:
+			Eat(STRING);
+			return std::unique_ptr<AST>(new String(token));
+			break;
+		case LPAREN:
+			Eat(LPAREN);
+			auto node = Expr(); // returns ptr to BinOp node
+			Eat(RPAREN);
+			return node;
+			break;
 	}
+
+	return std::unique_ptr<AST>(new Identifier(token)); // temporary
 }
 
 std::unique_ptr<AST> Parser::Term() {
 	auto node = Factor();
-
-	while(tokens.at(pointer).getType() == STAR || tokens.at(pointer).getType() == SLASH ) {
+	
+	// Math * and /
+	while(tokens.at(pointer).getType() == STAR || tokens.at(pointer).getType() == SLASH) {
 		Token token = tokens.at(pointer);
 		
 		if(token.getType() == STAR) { //multiply
@@ -58,6 +73,34 @@ std::unique_ptr<AST> Parser::Term() {
 		}
 
 		node = std::unique_ptr<AST>(new BinOp(std::move(node), token, Factor()));
+	}
+
+	// Comparison Operators
+	while(tokens.at(pointer).getType() == COMPARE || tokens.at(pointer).getType() == BANG_EQUAL || tokens.at(pointer).getType() == LESS || tokens.at(pointer).getType() == LESS_EQUAL || tokens.at(pointer).getType() == MORE || tokens.at(pointer).getType() == MORE_EQUAL) {
+		Token token = tokens.at(pointer);
+		
+		switch(token.getType()) {
+			case COMPARE:
+				Eat(COMPARE);
+				break;
+			case BANG_EQUAL:
+				Eat(BANG_EQUAL);
+				break;
+			case LESS:
+				Eat(LESS);
+				break;
+			case LESS_EQUAL:
+				Eat(LESS_EQUAL);
+				break;
+			case MORE:
+				Eat(MORE);
+				break;
+			case MORE_EQUAL:
+				Eat(MORE_EQUAL);
+				break;
+		}
+
+		node = std::unique_ptr<AST>(new CompOp(std::move(node), token, Factor()));
 	}
 
 	return node;
@@ -78,7 +121,17 @@ std::unique_ptr<AST> Parser::Expr() {
 		node = std::unique_ptr<AST>(new BinOp(std::move(node), token, Term()));
 	}
 
-	return node;
+	while(tokens.at(pointer).getType() == EQUAL) {
+		Token token = tokens.at(pointer);
+		
+		if(token.getType() == EQUAL) { // +
+			Eat(EQUAL);
+		}
 
+		node = std::unique_ptr<AST>(new VarAssign(std::move(node), token, Term()));
+	}
+
+	return node;
 }
 
+// Variables

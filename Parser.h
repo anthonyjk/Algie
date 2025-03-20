@@ -9,7 +9,7 @@
 class Parser {
 	public:
 		Parser(std::vector<Token> tk_vec) : tokens(tk_vec) {}
-		std::unique_ptr<AST> Parse();
+		void Parse(Program&);
 		void Eat(TokenType);
 		std::unique_ptr<AST> Factor();
 		std::unique_ptr<AST> Term();

@@ -14,9 +14,10 @@ int main(int argc, char *argv[]) {
 
 	Lexer myLexer(argv[1]); // pass path to source file to Lexer
 	Parser myParser(myLexer.Lex());
-	auto node = myParser.Parse();
+	Program myProgram;
+	myParser.Parse(myProgram);
 
-	node->Display();
+	myProgram.Display();
 	
 	return 0;
 }
