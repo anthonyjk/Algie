@@ -32,6 +32,25 @@ void Parser::Eat(TokenType tt) {
 }
 
 // Expressions
+std::unique_ptr<AST> Parser::Call() {
+	Token id = tokens.at(pointer);
+	Eat(IDENTIFIER);
+	std::unique_ptr<Parameters> p = std::make_unique<Parameters>();
+	while(tokens.at(pointer).getType() == LPAREN) {
+		Eat(LPAREN);
+		while(tokens.at(pointer).getType() != RPAREN && tokens.at(pointer).getType() != EOT) {
+			if(tokens.at(pointer).getType() == COMMA) {
+				Eat(COMMA);
+			} else {
+				p->Append(Expr()); // risky but can fix later
+			}
+		}
+		Eat(RPAREN);
+	}
+
+	return std::unique_ptr<AST>(new FuncCall(id, std::move(p)));
+
+}
 std::unique_ptr<AST> Parser::Factor() {
 	Token token = tokens.at(pointer);
 	
@@ -41,8 +60,12 @@ std::unique_ptr<AST> Parser::Factor() {
 			return std::unique_ptr<AST>(new Numeric(token));
 			break;
 		case IDENTIFIER:
-			Eat(IDENTIFIER);
-			return std::unique_ptr<AST>(new Identifier(token));
+			if(tokens.at(pointer+1).getType() == LPAREN) {
+				return Call();
+			} else {
+				Eat(IDENTIFIER);
+				return std::unique_ptr<AST>(new Identifier(token));
+			}
 			break;
 		case STRING:
 			Eat(STRING);

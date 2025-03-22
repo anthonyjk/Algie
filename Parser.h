@@ -11,6 +11,7 @@ class Parser {
 		Parser(std::vector<Token> tk_vec) : tokens(tk_vec) {}
 		void Parse(Program&);
 		void Eat(TokenType);
+		std::unique_ptr<AST> Call();
 		std::unique_ptr<AST> Factor();
 		std::unique_ptr<AST> Term();
 		std::unique_ptr<AST> Expr();

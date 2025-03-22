@@ -1,5 +1,5 @@
 x = 5
 
-x + 5 / 3
+print(x, 5, "string")
 
-x > 10
+print(x > 3)

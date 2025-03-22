@@ -114,4 +114,33 @@ class VarAssign: public AST {
 		std::unique_ptr<AST> right;
 };
 
+class Parameters: public AST {
+	public:
+		Parameters() {}
+		void Append(std::unique_ptr<AST> node) {
+			params.push_back(std::move(node));
+		}
+		void Display() override {
+			std::cout << "Parameters" << std::endl;
+			for(const auto& node : params) {
+				node->Display();
+			}
+		}
+	private:
+		std::vector<std::unique_ptr<AST>> params;
+};
+
+class FuncCall: public AST {
+	public:
+		FuncCall(Token id, std::unique_ptr<AST> params) : id(id), params(std::move(params)) {}
+		void Display() override {
+			std::cout << "FuncCall Called" << std::endl;
+			std::cout << id.getValue() << std::endl;
+			params->Display();
+		}
+	private:
+		Token id;
+		std::unique_ptr<AST> params;
+};
+
 #endif // SYNTAX_H
