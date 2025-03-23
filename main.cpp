@@ -16,7 +16,8 @@ int main(int argc, char *argv[]) {
 	Parser myParser(myLexer.Lex());
 	Program myProgram;
 	myParser.Parse(myProgram);
-
+	
+	myLexer.DisplayTokens();
 	myProgram.Display();
 	
 	return 0;

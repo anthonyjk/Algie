@@ -125,6 +125,10 @@ Token Lexer::NextToken(std::string line) {
 				++pointer;
 				return Token(COLON, ":");
 				break;
+			case ';':
+				++pointer;
+				return Token(SEMICOLON, ";");
+				break;
 			case '\n':
 				++pointer;
 				return Token(NEWLINE, "\n");

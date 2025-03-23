@@ -1,5 +1,11 @@
-x = 5
+condition = true;
+x = 2;
 
-print(x, 5, "string")
+while(condition) {
+	print("condition is true");
+	x = x + 1;
 
-print(x > 3)
+	if(x > 5) {
+		condition = false;
+	}
+}

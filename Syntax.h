@@ -105,7 +105,7 @@ class VarAssign: public AST {
 			left->Display();
 
 			std::cout << op.getValue() << std::endl;
-
+			
 			right->Display(); 
 		}
 	private:
@@ -141,6 +141,38 @@ class FuncCall: public AST {
 	private:
 		Token id;
 		std::unique_ptr<AST> params;
+};
+
+class Body: public AST {
+	public:
+		Body() {}
+		void Append(std::unique_ptr<AST> node) {
+			tree.push_back(std::move(node));
+		}
+		void Display() override {
+			std::cout << "Code Body Start" << std::endl;
+			for(const auto& node : tree) {
+				node->Display();
+			}
+			std::cout << "Code Body End" << std::endl;
+		}
+		~Body() = default;
+	private:
+		std::vector<std::unique_ptr<AST>> tree;
+};
+
+class ConditionStatement: public AST {
+	public:
+		ConditionStatement(Token id, std::unique_ptr<AST> con, std::unique_ptr<AST> block) : id(id), condition(std::move(con)), body(std::move(block)) {}
+		void Display() override {
+			std::cout << "Conditional Called: " << id.getValue() << std::endl;
+			condition->Display();
+			body->Display();
+		}
+	private:
+		Token id;
+		std::unique_ptr<AST> condition;
+		std::unique_ptr<AST> body;
 };
 
 #endif // SYNTAX_H

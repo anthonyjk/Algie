@@ -14,8 +14,14 @@ void Parser::Parse(Program & program) {
 			case IDENTIFIER:
 				program.Append(Expr());	
 				break;
+			case SEMICOLON:
+				Eat(SEMICOLON);
+				break;
 			case EOT:
 				pointer = tokens.size(); // just end program
+				break;
+			default:
+				program.Append(Expr());
 				break;
 		}
 
@@ -29,6 +35,17 @@ void Parser::Eat(TokenType tt) {
 	} else {
 		throw std::invalid_argument("Incorrect TokenType");
 	}
+}
+
+
+std::unique_ptr<AST> Parser::Block() {	
+	std::unique_ptr<Body> node = std::make_unique<Body>();
+
+	while(tokens.at(pointer).getType() != RBRACE && tokens.at(pointer).getType() != EOT) {
+		node->Append(Expr());
+	}
+
+	return node;
 }
 
 // Expressions
@@ -51,6 +68,7 @@ std::unique_ptr<AST> Parser::Call() {
 	return std::unique_ptr<AST>(new FuncCall(id, std::move(p)));
 
 }
+
 std::unique_ptr<AST> Parser::Factor() {
 	Token token = tokens.at(pointer);
 	
@@ -70,6 +88,14 @@ std::unique_ptr<AST> Parser::Factor() {
 		case STRING:
 			Eat(STRING);
 			return std::unique_ptr<AST>(new String(token));
+			break;
+		case TRUE:
+			Eat(TRUE);
+			return std::unique_ptr<AST>(new Boolean(token));
+			break;
+		case FALSE:
+			Eat(FALSE);
+			return std::unique_ptr<AST>(new Boolean(token));
 			break;
 		case LPAREN:
 			Eat(LPAREN);
@@ -151,7 +177,33 @@ std::unique_ptr<AST> Parser::Expr() {
 			Eat(EQUAL);
 		}
 
-		node = std::unique_ptr<AST>(new VarAssign(std::move(node), token, Term()));
+		node = std::unique_ptr<AST>(new VarAssign(std::move(node), token, Expr()));
+	}
+
+	if(tokens.at(pointer).getType() == IF || tokens.at(pointer).getType() == WHILE) {
+		Token token = tokens.at(pointer);
+		
+		if(token.getType() == IF) {
+			Eat(IF);
+		} else if(token.getType() == WHILE) {
+			Eat(WHILE);
+		}
+		
+		// condition collecting
+		Eat(LPAREN);
+		std::unique_ptr<AST> condition = Term();
+		Eat(RPAREN);
+	
+		// body collection
+		Eat(LBRACE);
+		std::unique_ptr<AST> body = Block();
+		Eat(RBRACE);
+
+		node = std::unique_ptr<AST>(new ConditionStatement(token, std::move(condition), std::move(body)));
+	}
+
+	if(tokens.at(pointer).getType() == SEMICOLON) {
+		Eat(SEMICOLON);
 	}
 
 	return node;
